@@ -36,7 +36,6 @@ def serve(path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, "index.html")
-
 @app.route('/register', methods=['GET'])
 def register():
     name = request.args.get("name")
@@ -49,14 +48,34 @@ def register():
 
     video_capture = cv2.VideoCapture(0)
     frame = None
+    first_frame = None
 
     while True:
-        ret, frame = video_capture.read()
-        if not ret or frame is None:
+        ret, current_frame = video_capture.read()
+        if not ret or current_frame is None:
             continue
 
-        cv2.imshow('Press Q to Capture and Register', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+
+        if first_frame is None:
+            first_frame = gray
+            continue
+
+        frame_delta = cv2.absdiff(first_frame, gray)
+        thresh = cv2.threshold(frame_delta, 25, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.dilate(thresh, None, iterations=2)
+        contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        motion_detected = any(cv2.contourArea(contour) > 1000 for contour in contours)
+
+        cv2.imshow('Motion Detection - Register (Wait for motion + press Q)', current_frame)
+
+        if motion_detected:
+            print("Motion Detected!")
+
+        if cv2.waitKey(1) & 0xFF == ord('q') and motion_detected:
+            frame = current_frame
             break
 
     video_capture.release()
@@ -82,6 +101,7 @@ def register():
     con.close()
     return jsonify({"message": "Face registered", "id": inserted_id, "name": name})
 
+
 @app.route('/register/details', methods=['POST'])
 def register_details():
     data = request.get_json()
@@ -101,7 +121,6 @@ def register_details():
     return "Details updated successfully"
 
 from flask import request  # make sure this is at the top
-
 @app.route("/login")
 def login():
     get_data()
@@ -114,14 +133,34 @@ def login():
 
     video_capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     frame = None
+    first_frame = None
 
     while True:
-        ret, frame = video_capture.read()
-        if not ret or frame is None:
+        ret, current_frame = video_capture.read()
+        if not ret or current_frame is None:
             continue
 
-        cv2.imshow('Press Q to Capture and Login', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
+
+        if first_frame is None:
+            first_frame = gray
+            continue
+
+        frame_delta = cv2.absdiff(first_frame, gray)
+        thresh = cv2.threshold(frame_delta, 25, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.dilate(thresh, None, iterations=2)
+        contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        motion_detected = any(cv2.contourArea(contour) > 1000 for contour in contours)
+
+        cv2.imshow('Motion Detection - Login (Wait for motion + press Q)', current_frame)
+
+        if motion_detected:
+            print("Motion Detected!")
+
+        if cv2.waitKey(1) & 0xFF == ord('q') and motion_detected:
+            frame = current_frame
             break
 
     if frame is None:
@@ -179,7 +218,6 @@ def login():
     video_capture.release()
     cv2.destroyAllWindows()
     return jsonify(msg)
-
 
 @app.route("/UserDashboard/<int:user_id>")
 def user_dashboard(user_id):
