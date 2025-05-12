@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/avatar.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+  
+
+  <title>Face Login</title>
+  
+  
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.91/build/spline-viewer.js"></script>
+
+ 
+  <style>
+    .background-spline {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: scroll;
+      background-color: black;
+     
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(14, 11, 11);
+  color: white;
+
+    }
+
+    spline-viewer {
+      width: 100%;
+      height: 100%;
+      background-color: black;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  color: white;
+
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Spline -->
+  <div class="background-spline">
+ 
+  
+    <spline-viewer url="https://prod.spline.design/JHWj0GULYQqkiW1O/scene.splinecode"></spline-viewer>
+  </div>
+
+  <!-- Optional Blur Overlay -->
+  <div class="background-blur"></div>
+
+  <!-- Your content -->
+  <div id="root" class="container">
+    <h1>Face Login</h1>
+    <!-- Other page content here -->
+  </div>
+</body>
