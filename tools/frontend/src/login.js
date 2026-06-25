@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import UserDashboard from './UserDashboard';
-import Admindashboard from './Admindashboard';
 
 const Login = () => {
     const [user, setUser] = useState(null);
